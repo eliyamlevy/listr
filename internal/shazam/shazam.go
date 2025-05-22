@@ -12,6 +12,7 @@ import (
 type ShazamHandlerInterface interface {
 	Init()
 	SendMatchRequest(chunk *audiostream.Chunk) (*song.Song, error)
+	Match(stream *audiostream.Stream) (*[]*song.Song, error) // Takes in audio stream
 }
 
 /*
@@ -21,10 +22,6 @@ SEARCH_FROM_FILE = (
         "&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
     )
 */
-
-const (
-	link = "https://amp.shazam.com/discovery/v5/en/US/desktop_mac/-/tag/962a6abf-e328-46da-bffe-0584f1e86a00/08f2e844-bf4a-47e5-b870-f2f3921a09ed?sync=true&webv3=true&sampling=true&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
-)
 
 type ShazamHandler struct {
 	finds      *[]*song.Song
@@ -47,6 +44,20 @@ func (sh *ShazamHandler) Init() {
 }
 
 func (sh *ShazamHandler) SendMatchRequest(c audiostream.Chunk) (*song.Song, error) {
+	// Get audio data from chunk
+	audioData := c.GetAudioData()
+	if len(audioData) == 0 {
+		return nil, fmt.Errorf("empty audio chunk")
+	}
 
-	return nil, nil
+	// TODO: Implement frequency peak detection from audio data
+
+	// For now, return a placeholder song
+	timestamp := c.GetTimestamp()
+	return &song.Song{
+		SongTitle:      nil,
+		ArtistName:     nil,
+		AlbumName:      nil,
+		TimestampFound: &timestamp,
+	}, nil
 }
